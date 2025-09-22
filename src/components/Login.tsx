@@ -1,67 +1,87 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [user, setUser] = useState<any>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  // Vérifier session au démarrage
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        setUser(data.session.user);
+        router.replace("/"); // Redirige vers page principale si déjà connecté
+      }
+    };
+    checkSession();
+  }, [router]);
 
+  const handleLogin = async () => {
+    setMessage("");
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: "https://lol-top1-tracker.app/auth/callback",
+        emailRedirectTo: "https://ton-app.vercel.app/auth/callback",
       },
     });
 
     if (error) {
-      setError(error.message);
+      setMessage("Erreur lors de l'envoi du Magic Link.");
     } else {
-      setSent(true);
+      setMessage(
+        `Un email a été envoyé à ${email}. Cliquez sur le lien pour vous connecter.`
+      );
+    }
+  };
+
+  const refreshSession = async () => {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      setUser(data.session.user);
+      router.replace("/");
+    } else {
+      setMessage(
+        "Aucune session détectée. Assurez-vous d'avoir cliqué sur le Magic Link."
+      );
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white px-4">
-      <div className="w-full max-w-md bg-gray-900/80 rounded-xl shadow-2xl p-8 border border-gray-700">
-        <h1 className="text-3xl font-bold mb-2 text-center text-emerald-400">
-          LoL 2v2 Tracker
+    <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white px-4">
+      <div className="w-full max-w-md bg-gray-900/80 rounded-2xl shadow-2xl border border-gray-800 p-6 sm:p-10 flex flex-col gap-6">
+        <h1 className="text-3xl font-bold text-emerald-400 text-center">
+          LoL Top1 Tracker
         </h1>
-        <p className="text-gray-400 text-center mb-6">
-          Connecte-toi avec ton email pour suivre ta progression.
-        </p>
 
-        {sent ? (
-          <div className="text-center text-green-400 font-semibold">
-            📩 Un lien de connexion a été envoyé à <br />
-            <span className="text-white">{email}</span>
-          </div>
-        ) : (
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
-            <input
-              type="email"
-              placeholder="Ton email..."
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="px-4 py-3 rounded-md bg-gray-800 border border-gray-600 focus:border-emerald-400 focus:ring focus:ring-emerald-400/30 outline-none"
-            />
-            <button
-              type="submit"
-              className="bg-emerald-500 hover:bg-emerald-600 transition text-white font-semibold py-3 rounded-md shadow-md"
-            >
-              Se connecter
-            </button>
-          </form>
-        )}
+        <input
+          type="email"
+          placeholder="Votre email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        />
 
-        {error && (
-          <p className="text-red-400 text-sm text-center mt-4">{error}</p>
-        )}
+        <button
+          onClick={handleLogin}
+          className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-md transition font-semibold"
+        >
+          Envoyer le Magic Link
+        </button>
+
+        {message && <p className="text-center text-sm text-gray-300">{message}</p>}
+
+        <button
+          onClick={refreshSession}
+          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition font-semibold"
+        >
+          Vérifier la connexion
+        </button>
       </div>
     </main>
   );
