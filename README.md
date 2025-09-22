@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LoL Top1 Tracker
 
-## Getting Started
+**LoL Top1 Tracker** est une application web pour suivre vos performances dans les parties 2v2 de League of Legends.  
+Cochez les champions avec lesquels vous avez terminé **top 1** et suivez votre progression grâce à une interface simple et interactive.
 
-First, run the development server:
+---
 
-```bash
+## Fonctionnalités
+
+- Suivi de votre progression par champion.
+- Barre de progression pour voir le pourcentage de champions validés.
+- Barre de recherche pour filtrer rapidement les champions.
+- Connexion sécurisée via **Magic Link** (pas de mot de passe requis).
+- Déconnexion rapide.
+- PWA installable sur mobile.
+- Interface responsive et design moderne.
+
+---
+
+## Technologies utilisées
+
+- [Next.js 13](https://nextjs.org/) – framework React moderne.
+- [Supabase](https://supabase.com/) – backend et gestion des utilisateurs.
+- [Tailwind CSS](https://tailwindcss.com/) – styles et mise en page.
+- PWA – pour installer l'application sur mobile ou bureau.
+
+---
+
+## Installation locale
+
+1. Clonez le dépôt :
+
+``bash
+git clone https://github.com/votre-utilisateur/LoL-Top1-Tracker.git
+cd LoL-Top1-Tracker
+
+2. Installez les dépendances :
+
+npm install
+
+
+3. Configurez vos variables d'environnement dans un fichier .env :
+
+NEXT_PUBLIC_SUPABASE_URL=<votre_url_supabase>
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<votre_anon_key>
+
+
+4. Lancez l'application en mode développement :
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. Ouvrez http://localhost:3000
+ dans votre navigateur.
