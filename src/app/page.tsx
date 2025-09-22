@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { supabase } from "@/lib/supabaseClient";
-import { champions as allChampions } from "@/lib/champion";
+import { champions } from "@/lib/champion";
 
 export default function HomePage() {
   const router = useRouter();
@@ -12,20 +12,15 @@ export default function HomePage() {
   const [user, setUser] = useState<any>(null);
   const [search, setSearch] = useState("");
 
-  // Vérifier session
   useEffect(() => {
     const init = async () => {
       const { data } = await supabase.auth.getSession();
-      if (!data.session) {
-        router.replace("/login");
-      } else {
-        setUser(data.session.user);
-      }
+      if (!data.session) router.replace("/login");
+      else setUser(data.session.user);
     };
     init();
   }, [router]);
 
-  // Charger progression depuis Supabase
   useEffect(() => {
     const fetchProgression = async () => {
       if (!user) return;
@@ -33,16 +28,14 @@ export default function HomePage() {
         .from("progression")
         .select("champion_id")
         .eq("user_id", user.id);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (data) setChecked(data.map((c: any) => c.champion_id));
     };
     fetchProgression();
   }, [user]);
 
-  // Toggle champion
   const toggleChampion = async (id: string) => {
     if (!user) return;
-
     const isChecked = checked.includes(id);
     setChecked((prev) =>
       isChecked ? prev.filter((c) => c !== id) : [...prev, id]
@@ -65,19 +58,17 @@ export default function HomePage() {
     });
   };
 
-  // Logout
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.replace("/login");
   };
 
-  const totalChampions = allChampions.length;
+  const totalChampions = champions.length;
   const checkedCount = checked.length;
   const progress = (checkedCount / totalChampions) * 100;
 
-  // Filtrer les champions selon la recherche
-  const champions = allChampions.filter((champ) =>
-    champ.id.toLowerCase().includes(search.toLowerCase())
+  const filteredChampions = champions.filter((c) =>
+    c.id.toLowerCase().includes(search.toLowerCase())
   );
 
   if (!user) return null;
@@ -86,7 +77,7 @@ export default function HomePage() {
     <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white px-4 py-6">
       <div className="w-full max-w-7xl bg-gray-900/80 rounded-2xl shadow-2xl border border-gray-800 p-6 sm:p-10">
         {/* Header */}
-        <header className="w-full flex justify-between items-center mb-10">
+        <header className="w-full flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-emerald-400 tracking-wide">
             LoL Top1 Tracker
           </h1>
@@ -115,19 +106,17 @@ export default function HomePage() {
         </div>
 
         {/* Barre de recherche */}
-        <div className="w-full max-w-md mx-auto mb-6">
-          <input
-            type="text"
-            placeholder="Rechercher un champion..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Rechercher un champion..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full mb-6 px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+        />
 
         {/* Grille */}
         <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-4">
-          {champions.map((champ) => {
+          {filteredChampions.map((champ) => {
             const isChecked = checked.includes(champ.id);
             return (
               <div
@@ -149,7 +138,6 @@ export default function HomePage() {
                   className={`rounded-md transition ${isChecked ? "opacity-40" : ""}`}
                 />
                 <span className="text-xs mt-2">{champ.id}</span>
-
                 {isChecked && (
                   <span className="absolute top-1 right-1 text-green-400 text-xl font-bold">
                     ✓
