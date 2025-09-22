@@ -8,6 +8,7 @@ import { champions as allChampions } from "@/lib/champion";
 export default function HomePage() {
   const router = useRouter();
   const [checked, setChecked] = useState<string[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [user, setUser] = useState<any>(null);
   const [search, setSearch] = useState("");
 
@@ -32,7 +33,7 @@ export default function HomePage() {
         .from("progression")
         .select("champion_id")
         .eq("user_id", user.id);
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (data) setChecked(data.map((c: any) => c.champion_id));
     };
     fetchProgression();
